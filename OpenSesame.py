@@ -4,6 +4,7 @@ class OpenSesameCommand(sublime_plugin.TextCommand):
 
 	def run(self, edit):
 		self.thedir = '/Users/tom/Documents/Tradeweb/tradeweb-uscc/src/js/components'
+		#eg: self.thedir = '~/Users/tom/Documents/Tradeweb/tradeweb-uscc/src/js/components'
 		self.window = sublime.active_window()
 		self.listings = [ name for name in os.listdir(self.thedir) if os.path.isdir(os.path.join(self.thedir, name)) ]
 		self.window.show_quick_panel(self.listings, self.open_component, sublime.MONOSPACE_FONT)
@@ -16,7 +17,7 @@ class OpenSesameCommand(sublime_plugin.TextCommand):
 
 		print('>>>Opening component')
 		
-		# Generate file paths
+		# Generate file paths``
 		compName = self.listings[index]
 
 		print('>>>Comp name: ' + compName)
