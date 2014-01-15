@@ -1,0 +1,10 @@
+{
+	// Directories where you keep components here
+	"componentDirectories": [
+		"/Users/tom/Documents/Tradeweb/tradeweb-uscc/src/js/components"
+	],
+
+	// Layout mode
+	"layoutMode": "layouts.timsLayout"
+
+}
