@@ -1,10 +1,16 @@
 {
-	// Directories where you keep components here
-	"componentDirectories": [
-		"/Users/tom/Documents/Tradeweb/tradeweb-uscc/src/js/components"
+	"paths": [
+		"$ProjectDir/src/modules/components",
+		"$ProjectDir/src/lib/fathom-components/components"
 	],
 
-	// Layout mode
-	"layoutMode": "layouts.timsLayout"
-
+	"layout": {
+		"cols": [0.0, 0.5, 1.0],
+		"rows": [0.0, 0.5, 1.0],
+		"cells": [
+			[0, 0, 1, 1],
+			[1, 0, 2, 1],
+			[0, 1, 2, 2]
+		]
+	}
 }

@@ -3,59 +3,64 @@ import sublime, sublime_plugin, os
 class OpenSesameCommand(sublime_plugin.TextCommand):
 
 	def run(self, edit):
-		self.thedir = '/Users/tom/Documents/Tradeweb/tradeweb-uscc/src/js/components'
-		#eg: self.thedir = '~/Users/tom/Documents/Tradeweb/tradeweb-uscc/src/js/components'
-		self.window = sublime.active_window()
-		self.listings = [ name for name in os.listdir(self.thedir) if os.path.isdir(os.path.join(self.thedir, name)) ]
-		self.window.show_quick_panel(self.listings, self.open_component, sublime.MONOSPACE_FONT)
-		self.settings = sublime.load_settings('OpenSesame.sublime-settings')
+		# Load the plugin settings
+		settings = sublime.load_settings('OpenSesame.sublime-settings')
+
+		self.layout = settings.get('layout')
+		self.component_paths = settings.get('paths')
+
+		# Get the current project directory
+		window = sublime.active_window()
+		project_dir = window.folders()[0]
+
+		# Replace placeholders in component paths
+		component_paths = [ component_path.replace('$ProjectDir', project_dir) for component_path in self.component_paths ]
+
+		# Filter out any paths that don't exist
+		component_paths = [ component_path for component_path in component_paths if os.path.isdir(component_path) ]
+
+		# Build a list of child component { name, path } dictionaries (this creates a list containing a sublist for each of the component paths)
+		components_by_path = [ [ { 'name': filename, 'path': component_path + '/' + filename } for filename in os.listdir(component_path) if os.path.isdir(os.path.join(component_path, filename)) ] for component_path in component_paths ]
+
+		# Flatten the array of child components
+		components = [ component for sublist in components_by_path for component in sublist ]
+
+		# Store the array of child components
+		self.components = components
+		
+		# Get a list of component names to display in the panel menu
+		component_names = [ component['name'] for component in components ]
+
+		# Display the component names in a panel menu
+		window.show_quick_panel(component_names, self.open_component, sublime.MONOSPACE_FONT)
+
 
 	def open_component(self, index):
 
+		# Bail out if no component was selected
 		if index == -1:
 			return
-
-		print('>>>Opening component')
 		
-		# Generate file paths``
-		compName = self.listings[index]
+		# Get the name of the selected component
+		selected_component = self.components[index]
+		component_name = selected_component['name']
+		component_path = selected_component['path']
 
-		print('>>>Comp name: ' + compName)
+		# Get the paths to the individual files within the component directory
+		js_filename = component_path + '/' + component_name + '.js'
+		html_filename = component_path + '/' + component_name + '.html'
+		sass_filename = component_path + '/_' + component_name + '.scss'
 
-		jsFile = self.create_file_ref(compName, 'js')
-		htmlFile = self.create_file_ref(compName, 'html')
-		sassFile = self.create_file_ref(compName, 'scss')
+		# Lay out the window panes
+		window = sublime.active_window()
+		window.set_layout(self.layout)
 
-		layout = {
-			"cols": [0.0, 0.5, 1.0],
-			"rows": [0.0, 0.5, 1.0],
-			"cells": [
-				[0, 0, 1, 1],
-				[1, 0, 2, 1],
-				[0, 1, 2, 2]
-			]
-		}
+		window.focus_group(0)
+		window.open_file(html_filename)
 
-		timsLayout = {"cols": [0.0, 0.5, 1.0],"rows": [0.0, 1/3, 1.0],"cells": [[0, 0, 1, 1], [0, 1, 1, 2], [1, 0, 2, 2]]}
+		window.focus_group(1)
+		window.open_file(sass_filename)
 
-		self.window.set_layout(timsLayout)
-
-		self.window.focus_group(0)
-		self.window.open_file(htmlFile)
-
-		self.window.focus_group(1)
-		self.window.open_file(sassFile)
-
-		self.window.focus_group(2)
-		self.window.open_file(jsFile)
-
-	def create_file_ref(self, component, type):
-		componentDir = self.thedir + '/' + component + '/'
-
-		print('>>>Creating path for: ' + component + '.' + type)
-
-		if type == 'scss':
-			return componentDir + '_' + component + '.' + type
-		else:
-			return componentDir + component + '.' + type
+		window.focus_group(2)
+		window.open_file(js_filename)
 

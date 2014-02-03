@@ -25,7 +25,7 @@ Specify the directory where sublime should look for components on line 6 of `Ope
 	
 ###Todo
 
-- [] Get directory from settings file
-- [] Search multiple directories
-- [] Alternate layouts
-- [] Close all related files when closing a view	
+- [x] Get directory from settings file§
+- [x] Search multiple directories
+- [x] Alternate layouts
+- [ ] Close all related files when closing a view	
