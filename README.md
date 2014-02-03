@@ -9,7 +9,12 @@ A sublime plugin to open all files for a particular component in multiple views.
 ### Installation
 
 	cd ~/Library/Application\ Support/Sublime\ Text/ 3/Packages
-	git clone git@github.com:fathomlondon/open-sesame.git 
+	git clone git@github.com:fathomlondon/open-sesame.git
+
+
+### Usage
+
+Press `⌘+⌥+⇧+O` from anywhere within Sublime Text to open the panel.
 	
 
 ### Configuration
@@ -95,11 +100,6 @@ Example `my-project.sublime-project` file:
 	}
 }
 ```
-
-		
-### Use
-
-	Press `⌘+⌥+⇧+o` from anywhere within Sublime Text to open the panel.
 
 ---
 	
