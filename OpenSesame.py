@@ -4,10 +4,18 @@ class OpenSesameCommand(sublime_plugin.TextCommand):
 
 	def run(self, edit):
 		# Load the plugin settings
-		settings = sublime.load_settings('OpenSesame.sublime-settings')
+		plugin_settings = sublime.load_settings('OpenSesame.sublime-settings')
 
-		self.layout = settings.get('layout')
-		self.component_paths = settings.get('paths')
+		# Override the plugin settings project-specific settings if specified
+		project_data = sublime.active_window().project_data()
+		if project_data and project_data.get('settings') and project_data.get('settings').get('open_sesame'):
+			project_settings = project_data.get('settings').get('open_sesame')
+			for setting in project_settings:
+				plugin_settings.set(setting, project_settings[setting])
+
+
+		self.layout = plugin_settings.get('layout')
+		self.component_paths = plugin_settings.get('paths')
 
 		# Get the current project directory
 		window = sublime.active_window()
