@@ -58,7 +58,7 @@ Example `User/OpenSesame.sublime-settings` file:
 	],
 	"layout": {
 		"cols": [0.0, 0.5, 1.0],
-		"rows": [0.0, 0.33333333333333, 1.0],
+		"rows": [0.0, 0.4, 1.0],
 		"cells": [
 			[0, 0, 1, 1],
 			[0, 1, 1, 2],
@@ -89,7 +89,7 @@ Example `my-project.sublime-project` file:
 			],
 			"layout": {
 				"cols": [0.0, 0.5, 1.0],
-				"rows": [0.0, 0.33333333333333, 1.0],
+				"rows": [0.0, 0.4, 1.0],
 				"cells": [
 					[0, 0, 1, 1],
 					[0, 1, 1, 2],
