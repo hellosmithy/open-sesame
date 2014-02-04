@@ -59,24 +59,28 @@ class OpenSesameCommand(sublime_plugin.TextCommand):
 		html_filename = component_path + '/' + component_name + '.html'
 		sass_filename = component_path + '/_' + component_name + '.scss'
 
-		# Lay out the window panes
+		# Get a reference to the active window
 		window = sublime.active_window()
+
+		# Open the component source files and get the corresponding views
+		html_view = window.open_file(html_filename)
+		sass_view = window.open_file(sass_filename)
+		js_view = window.open_file(js_filename)
+		
+		# Lay out the window panes
 		window.set_layout(self.layout)
 
-		window.focus_group(0)
-		window.open_file(html_filename)
+		# Move the views to their corresponding panes
+		window.set_view_index(html_view, 0, 0)
+		window.set_view_index(sass_view, 1, 0)
+		window.set_view_index(js_view, 2, 0)
 
-		window.focus_group(1)
-		window.open_file(sass_filename)
+		# Make sure the views are all focused
+		window.focus_view(html_view)
+		window.focus_view(sass_view)
+		window.focus_view(js_view)
 
-		window.focus_group(2)
-		window.open_file(js_filename)
-
-		# Get the views so that we can add close listeners
-		html_view = window.active_view_in_group(0)
-		sass_view = window.active_view_in_group(1)
-		js_view = window.active_view_in_group(2)
-
+		# Register the views with the close listener to synchronise view closing
 		CloseListener.groups.append([html_view, sass_view, js_view])
 
 
