@@ -72,3 +72,23 @@ class OpenSesameCommand(sublime_plugin.TextCommand):
 		window.focus_group(2)
 		window.open_file(js_filename)
 
+		# Get the views so that we can add close listeners
+		html_view = window.active_view_in_group(0)
+		sass_view = window.active_view_in_group(1)
+		js_view = window.active_view_in_group(2)
+
+		CloseListener.groups.append([html_view, sass_view, js_view])
+
+
+class CloseListener(sublime_plugin.EventListener):
+
+	groups = []
+
+	def on_close(self, view):
+		matches = [group for group in self.groups if view in group]
+		if len(matches) > 0:
+			for matchedGroup in matches:
+				for view in matchedGroup:
+					view.close()
+
+
