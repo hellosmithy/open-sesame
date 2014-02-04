@@ -55,33 +55,31 @@ class OpenSesameCommand(sublime_plugin.TextCommand):
 		component_path = selected_component['path']
 
 		# Get the paths to the individual files within the component directory
-		js_filename = component_path + '/' + component_name + '.js'
-		html_filename = component_path + '/' + component_name + '.html'
-		sass_filename = component_path + '/_' + component_name + '.scss'
+		paths = [
+			component_path + '/' + component_name + '.js',
+			component_path + '/' + component_name + '.html',
+			component_path + '/_' + component_name + '.scss'
+		]
 
 		# Get a reference to the active window
 		window = sublime.active_window()
 
 		# Open the component source files and get the corresponding views
-		html_view = window.open_file(html_filename)
-		sass_view = window.open_file(sass_filename)
-		js_view = window.open_file(js_filename)
+		views = [ window.open_file(path) for path in paths ]
 		
 		# Lay out the window panes
 		window.set_layout(self.layout)
 
 		# Move the views to their corresponding panes
-		window.set_view_index(html_view, 0, 0)
-		window.set_view_index(sass_view, 1, 0)
-		window.set_view_index(js_view, 2, 0)
-
-		# Make sure the views are all focused
-		window.focus_view(html_view)
-		window.focus_view(sass_view)
-		window.focus_view(js_view)
+		for groupIndex, view in enumerate(views):
+			groupViews = window.views_in_group(groupIndex)
+			if not view in groupViews:
+				otherViews = [ otherView for otherView in groupViews ]
+				window.set_view_index(view, groupIndex, len(otherViews))
+			window.focus_view(view)
 
 		# Register the views with the close listener to synchronise view closing
-		CloseListener.groups.append([html_view, sass_view, js_view])
+		CloseListener.groups.append(views)
 
 
 class CloseListener(sublime_plugin.EventListener):
@@ -92,9 +90,10 @@ class CloseListener(sublime_plugin.EventListener):
 		matchedGroups = [group for group in self.groups if view in group]
 		if len(matchedGroups) > 0:
 			for matchedGroup in matchedGroups:
-				otherViews = [matchedView for matchedView in matchedGroup if matchedView != view]
-				self.groups.remove(matchedGroup)
-				for otherView in otherViews:
-					otherView.close()
+				if matchedGroup in self.groups:
+					self.groups.remove(matchedGroup)
+					otherViews = [matchedView for matchedView in matchedGroup if matchedView != view]
+					for otherView in otherViews:
+						otherView.close()
 
 
