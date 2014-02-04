@@ -85,10 +85,12 @@ class CloseListener(sublime_plugin.EventListener):
 	groups = []
 
 	def on_close(self, view):
-		matches = [group for group in self.groups if view in group]
-		if len(matches) > 0:
-			for matchedGroup in matches:
-				for view in matchedGroup:
-					view.close()
+		matchedGroups = [group for group in self.groups if view in group]
+		if len(matchedGroups) > 0:
+			for matchedGroup in matchedGroups:
+				otherViews = [matchedView for matchedView in matchedGroup if matchedView != view]
+				self.groups.remove(matchedGroup)
+				for otherView in otherViews:
+					otherView.close()
 
 
