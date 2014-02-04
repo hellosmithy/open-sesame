@@ -1,7 +1,7 @@
 {
 	"paths": [
 		"$ProjectDir/src/modules/components",
-		"$ProjectDir/src/lib/fathom-components/components"
+		"$ProjectDir/src/lib/fathom-library/components"
 	],
 
 	"layout": {
