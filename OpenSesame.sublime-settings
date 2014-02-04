@@ -1,6 +1,8 @@
 {
 	"paths": [
 		"$ProjectDir/src/modules/components",
+		"$ProjectDir/src/modules/apps",
+		"$ProjectDir/src/modules/views",
 		"$ProjectDir/src/lib/fathom-library/components"
 	],
 
