@@ -56,9 +56,9 @@ class OpenSesameCommand(sublime_plugin.TextCommand):
 
 		# Get the paths to the individual files within the component directory
 		paths = [
+			component_path + '/' + component_name + '.js',
 			component_path + '/' + component_name + '.html',
-			component_path + '/_' + component_name + '.scss',
-			component_path + '/' + component_name + '.js'
+			component_path + '/_' + component_name + '.scss'
 		]
 
 		# Get a reference to the active window
