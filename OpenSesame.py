@@ -104,7 +104,6 @@ class FocusListener(sublime_plugin.EventListener):
 		self.focusing = True
 		
 		matchedGroups = [group for group in self.groups if view in group]
-		print(len(matchedGroups))
 		if len(matchedGroups) > 0:
 			for matchedGroup in matchedGroups:
 				otherViews = [matchedView for matchedView in matchedGroup if matchedView != view]
