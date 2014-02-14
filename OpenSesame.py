@@ -70,6 +70,9 @@ class OpenSesameCommand(sublime_plugin.TextCommand):
 		# Lay out the window panes
 		window.set_layout(self.layout)
 
+		# Notify the focus listener that an open operation is in progress
+		FocusListener.opening = True
+
 		# Move the views to their corresponding panes
 		for groupIndex, view in enumerate(views):
 			groupViews = window.views_in_group(groupIndex)
@@ -80,15 +83,40 @@ class OpenSesameCommand(sublime_plugin.TextCommand):
 		# Focus the first view
 		window.focus_view(views[0])
 
-		# Register the views with the close listener to synchronise view closing
-		CloseListener.groups.append(views)
+		# Notify the focus listener that the open operation has completed
+		FocusListener.opening = False
+
+		# Register the views with the focus listener to synchronise view focusing and closing
+		FocusListener.groups.append(views)
 
 
-class CloseListener(sublime_plugin.EventListener):
+class FocusListener(sublime_plugin.EventListener):
 
 	groups = []
+	opening = False
+	closing = False
+	focusing = False
+
+	def on_activated(self, view):
+		if self.opening: return
+		if self.closing: return
+		if self.focusing: return
+		self.focusing = True
+		
+		matchedGroups = [group for group in self.groups if view in group]
+		print(len(matchedGroups))
+		if len(matchedGroups) > 0:
+			for matchedGroup in matchedGroups:
+				otherViews = [matchedView for matchedView in matchedGroup if matchedView != view]
+				for otherView in otherViews:
+					otherView.window().focus_view(otherView)
+			view.window().focus_view(view)
+		
+		self.focusing = False
 
 	def on_close(self, view):
+		if self.closing: return
+		self.closing = True
 		matchedGroups = [group for group in self.groups if view in group]
 		if len(matchedGroups) > 0:
 			for matchedGroup in matchedGroups:
@@ -97,5 +125,6 @@ class CloseListener(sublime_plugin.EventListener):
 					otherViews = [matchedView for matchedView in matchedGroup if matchedView != view]
 					for otherView in otherViews:
 						otherView.close()
+		self.closing = False
 
 
