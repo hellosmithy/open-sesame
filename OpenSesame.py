@@ -76,7 +76,9 @@ class OpenSesameCommand(sublime_plugin.TextCommand):
 			if not view in groupViews:
 				otherViews = [ otherView for otherView in groupViews ]
 				window.set_view_index(view, groupIndex, len(otherViews))
-			window.focus_view(view)
+		
+		# Focus the first view
+		window.focus_view(views[0])
 
 		# Register the views with the close listener to synchronise view closing
 		CloseListener.groups.append(views)
