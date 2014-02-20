@@ -100,9 +100,3 @@ Example `my-project.sublime-project` file:
 	}
 }
 ```
-
----
-
-### TODO
-
-- Close all related files when closing a view
