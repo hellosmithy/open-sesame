@@ -111,7 +111,7 @@ class FocusListener(sublime_plugin.EventListener):
 		
 		self.focusing = False
 
-	def on_close(self, view):
+	def on_pre_close(self, view):
 		if self.closing: return
 		self.closing = True
 		matchedGroups = [group for group in self.groups if view in group]
