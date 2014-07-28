@@ -22,6 +22,13 @@ class OpenSesameCommand(sublime_plugin.TextCommand):
 		# Replace placeholders in component paths
 		component_paths = [ component_path.replace('$ProjectDir', project_dir) for component_path in self.component_paths ]
 
+		# Get subdirectories recursively
+		component_paths_copy = list(component_paths)
+		component_paths = []
+		for component_path in component_paths_copy:
+			subpaths = [root for root, dirs, files in os.walk(component_path)]
+			component_paths += subpaths
+
 		# Filter out any paths that don't exist
 		component_paths = [ component_path for component_path in component_paths if os.path.isdir(component_path) ]
 
@@ -33,7 +40,7 @@ class OpenSesameCommand(sublime_plugin.TextCommand):
 
 		# Store the array of child components
 		self.components = components
-		
+
 		# Get a list of component names to display in the panel menu
 		component_names = [ component['name'] for component in components ]
 
@@ -46,7 +53,7 @@ class OpenSesameCommand(sublime_plugin.TextCommand):
 		# Bail out if no component was selected
 		if index == -1:
 			return
-		
+
 		# Get the name of the selected component
 		selected_component = self.components[index]
 		component_name = selected_component['name']
@@ -64,7 +71,7 @@ class OpenSesameCommand(sublime_plugin.TextCommand):
 
 		# Open the component source files and get the corresponding views
 		views = [ window.open_file(path) for path in paths ]
-		
+
 		# Lay out the window panes
 		window.set_layout(self.layout)
 
@@ -77,7 +84,7 @@ class OpenSesameCommand(sublime_plugin.TextCommand):
 			if not view in groupViews:
 				otherViews = [ otherView for otherView in groupViews ]
 				window.set_view_index(view, groupIndex, len(otherViews))
-		
+
 		# Focus the first view
 		window.focus_view(views[0])
 
@@ -100,7 +107,7 @@ class FocusListener(sublime_plugin.EventListener):
 		if self.closing: return
 		if self.focusing: return
 		self.focusing = True
-		
+
 		matchedGroups = [group for group in self.groups if view in group]
 		if len(matchedGroups) > 0:
 			for matchedGroup in matchedGroups:
@@ -108,7 +115,7 @@ class FocusListener(sublime_plugin.EventListener):
 				for otherView in otherViews:
 					otherView.window().focus_view(otherView)
 			view.window().focus_view(view)
-		
+
 		self.focusing = False
 
 	def on_pre_close(self, view):
@@ -123,5 +130,3 @@ class FocusListener(sublime_plugin.EventListener):
 					for otherView in otherViews:
 						otherView.close()
 		self.closing = False
-
-
