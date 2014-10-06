@@ -4,42 +4,22 @@ class OpenSesameCommand(sublime_plugin.TextCommand):
 
 	def run(self, edit):
 		# Load the plugin settings
-		plugin_settings = sublime.load_settings('OpenSesame.sublime-settings')
-
-		# Override the plugin settings with project-specific settings if specified
-		project_settings = None
-		project_data = sublime.active_window().project_data()
-		if project_data and project_data.get('settings') and project_data.get('settings').get('open_sesame'):
-			project_settings = project_data.get('settings').get('open_sesame')
-
-		self.layout = project_settings.get('layout') if project_settings and project_settings.get('layout') else plugin_settings.get('layout')
-		self.component_paths = project_settings.get('paths') if project_settings and project_settings.get('paths') else plugin_settings.get('paths')
+		settings = self.get_settings()
+		self.layout = settings.get('layout')
+		self.component_paths = settings.get('paths')
 
 		# Get the current project directory
 		window = sublime.active_window()
 		project_dir = window.folders()[0]
 
-		# Replace placeholders in component paths
-		component_paths = [ component_path.replace('$ProjectDir', project_dir) for component_path in self.component_paths ]
-
-		# Filter out any paths that don't exist
-		component_paths = [ component_path for component_path in component_paths if os.path.isdir(component_path) ]
-
-		# Build a list of child component { name, path } dictionaries (this creates a list containing a sublist for each of the component paths)
-		components_by_path = [ [ { 'name': filename, 'path': component_path + '/' + filename } for filename in os.listdir(component_path) if os.path.isdir(os.path.join(component_path, filename)) ] for component_path in component_paths ]
-
-		# Flatten the array of child components
-		components = [ component for sublist in components_by_path for component in sublist ]
-
-		# Store the array of child components
-		self.components = components
+		# Get the array of components
+		self.components = self.get_components(self.component_paths, project_dir)
 		
 		# Get a list of component names to display in the panel menu
-		component_names = [ component['name'] for component in components ]
+		component_names = [ component.get('name') for component in self.components ]
 
 		# Display the component names in a panel menu
 		window.show_quick_panel(component_names, self.open_component, sublime.MONOSPACE_FONT)
-
 
 	def open_component(self, index):
 
@@ -77,7 +57,7 @@ class OpenSesameCommand(sublime_plugin.TextCommand):
 			if not view in groupViews:
 				otherViews = [ otherView for otherView in groupViews ]
 				window.set_view_index(view, groupIndex, len(otherViews))
-		
+
 		# Focus the first view
 		window.focus_view(views[0])
 
@@ -86,6 +66,53 @@ class OpenSesameCommand(sublime_plugin.TextCommand):
 
 		# Register the views with the focus listener to synchronise view focusing and closing
 		FocusListener.groups.append(views)
+
+	def get_components(self, component_paths, project_dir):
+		# Replace placeholders in component paths
+		component_paths = [ component_path.replace('$ProjectDir', project_dir) for component_path in self.component_paths ]
+
+		# Filter out any paths that don't exist
+		component_paths = [ component_path for component_path in component_paths if os.path.isdir(component_path) ]
+
+		# Build a list of child component { name, path } dictionaries (this creates a list containing a sublist for each of the component paths)
+		components_by_path = [ [ { 'name': filename, 'path': component_path + '/' + filename } for filename in os.listdir(component_path) if os.path.isdir(os.path.join(component_path, filename)) ] for component_path in component_paths ]
+
+		# Flatten the array of child components
+		components = [ component for sublist in components_by_path for component in sublist ]
+
+		return components
+
+	def get_settings(self):
+		plugin_settings = self.get_plugin_settings()
+		project_settings = self.get_project_settings()
+
+		# Load the generic plugin settings
+		layout = plugin_settings.get('layout')
+		paths = plugin_settings.get('paths')
+
+		# Override the plugin settings with project-specific settings if specified
+		if project_settings.get('layout'):
+			layout = project_settings.get('layout')
+
+		if project_settings.get('paths'):
+			paths = project_settings.get('paths')
+
+		return {
+			'layout': layout,
+			'paths': paths
+		}
+
+	def get_project_settings(self):
+		project_data = sublime.active_window().project_data()
+		if project_data and project_data.get('settings') and project_data.get('settings').get('open_sesame'):
+			return project_data.get('settings').get('open_sesame')
+		return {}
+
+	def get_plugin_settings(self):
+		plugin_settings = sublime.load_settings('OpenSesame.sublime-settings')
+		if plugin_settings:
+			return plugin_settings
+		return {}
 
 
 class FocusListener(sublime_plugin.EventListener):
