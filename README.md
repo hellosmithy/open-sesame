@@ -1,4 +1,4 @@
-#Open Sesame 0.1
+#Open Sesame 0.2.0
 
 A sublime plugin to open all files for a particular component in multiple views.
 
@@ -68,35 +68,35 @@ Example `User/OpenSesame.sublime-settings` file:
 }
 ```
 
-#### Project-level configuration
+#### Project-level configuration 0.2.0
 
-Default and user-level settings can be overridden within a project by adding an `open_sesame` key to the `settings` property of your Sublime Text project file.
+Default and user-level settings can be overridden within a project by adding an `.open-sesame` file to root of your project folder
 
-Example `my-project.sublime-project` file:
+Example `.open-sesame` file:
 
-```json
-{
-	"folders": [
-		{
-			"path": "."
-		}
-	],
-	"settings": {
-		"open_sesame": {
-			"paths": [
-				"$ProjectDir/src/app/components",
-				"$ProjectDir/src/lib/fathom-components/components"
-			],
-			"layout": {
-				"cols": [0.0, 0.5, 1.0],
-				"rows": [0.0, 0.4, 1.0],
-				"cells": [
-					[0, 0, 1, 1],
-					[0, 1, 1, 2],
-					[1, 0, 2, 2]
-				]
-			}
-		}
-	}
-}
 ```
+	{
+		"paths": [
+			"$ProjectDir/src/app/components",
+			"$ProjectDir/src/lib/fathom-components/components"
+		],
+		"layout": {
+			"cols": [0.0, 0.5, 1.0],
+			"rows": [0.0, 0.4, 1.0],
+			"cells": [
+				[0, 0, 1, 1],
+				[0, 1, 1, 2],
+				[1, 0, 2, 2]
+			]
+		},
+		"types": [
+			"*.html",
+			"*.js",
+			"*.styl"
+		]
+	}
+```
+
+Note * is replaced by folder name so if your modules require a prefix for a given type
+specify it in the following format - `_*.scss` which becomes `_component.scss` or `index.html` (*remains untouched*) if all modules have a naming scheme. 
+

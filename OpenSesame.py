@@ -1,23 +1,34 @@
-import sublime, sublime_plugin, os
+import sublime, sublime_plugin, os, logging, json
 
 class OpenSesameCommand(sublime_plugin.TextCommand):
 
 	def run(self, edit):
+
+		# Get the current project directory
+		window = sublime.active_window()
+		project_dir = window.folders()[0]
+
 		# Load the plugin settings
 		plugin_settings = sublime.load_settings('OpenSesame.sublime-settings')
 
 		# Override the plugin settings with project-specific settings if specified
 		project_settings = None
-		project_data = sublime.active_window().project_data()
-		if project_data and project_data.get('settings') and project_data.get('settings').get('open_sesame'):
-			project_settings = project_data.get('settings').get('open_sesame')
+		project_settings_file = None
+		self.project_data = None
+
+		if os.path.exists(project_dir + '/.open-sesame'):
+			project_settings_file = open(project_dir + '/.open-sesame')
+			logging.debug('found project settings file .open-sesame')
+		
+		if project_settings_file:
+			self.project_data = json.load(project_settings_file)
+
+
+		if self.project_data:
+			project_settings = self.project_data
 
 		self.layout = project_settings.get('layout') if project_settings and project_settings.get('layout') else plugin_settings.get('layout')
 		self.component_paths = project_settings.get('paths') if project_settings and project_settings.get('paths') else plugin_settings.get('paths')
-
-		# Get the current project directory
-		window = sublime.active_window()
-		project_dir = window.folders()[0]
 
 		# Replace placeholders in component paths
 		component_paths = [ component_path.replace('$ProjectDir', project_dir) for component_path in self.component_paths ]
@@ -65,6 +76,13 @@ class OpenSesameCommand(sublime_plugin.TextCommand):
 			component_path + '/' + component_name + '.html',
 			component_path + '/_' + component_name + '.scss'
 		]
+
+		file_types = self.project_data.get('types')
+		if file_types:
+			paths = []
+			for file_type in file_types:
+				paths.append(component_path + '/' + file_type.replace('*', component_name))
+			logging.debug(paths)
 
 		# Get a reference to the active window
 		window = sublime.active_window()
