@@ -77,12 +77,13 @@ class OpenSesameCommand(sublime_plugin.TextCommand):
 			component_path + '/_' + component_name + '.scss'
 		]
 
-		file_types = self.project_data.get('types')
-		if file_types:
-			paths = []
-			for file_type in file_types:
-				paths.append(component_path + '/' + file_type.replace('*', component_name))
-			logging.debug(paths)
+		if self.project_data != None:
+			file_types = self.project_data.get('types')
+			if file_types:
+				paths = []
+				for file_type in file_types:
+					paths.append(component_path + '/' + file_type.replace('*', component_name))
+				logging.debug(paths)
 
 		# Get a reference to the active window
 		window = sublime.active_window()
