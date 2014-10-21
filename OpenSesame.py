@@ -19,7 +19,7 @@ class OpenSesameCommand(sublime_plugin.TextCommand):
 		if os.path.exists(project_dir + '/.open-sesame'):
 			project_settings_file = open(project_dir + '/.open-sesame')
 			logging.debug('found project settings file .open-sesame')
-		
+
 		if project_settings_file:
 			self.project_data = json.load(project_settings_file)
 
@@ -77,12 +77,14 @@ class OpenSesameCommand(sublime_plugin.TextCommand):
 			component_path + '/_' + component_name + '.scss'
 		]
 
-		file_types = self.project_data.get('types')
-		if file_types:
-			paths = []
-			for file_type in file_types:
-				paths.append(component_path + '/' + file_type.replace('*', component_name))
-			logging.debug(paths)
+		if self.project_data:
+			file_types = self.project_data.get('types')
+
+			if file_types:
+				paths = []
+				for file_type in file_types:
+					paths.append(component_path + '/' + file_type.replace('*', component_name))
+				logging.debug(paths)
 
 		# Get a reference to the active window
 		window = sublime.active_window()
