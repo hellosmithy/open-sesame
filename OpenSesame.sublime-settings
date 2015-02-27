@@ -6,6 +6,12 @@
 		"$ProjectDir/src/lib/fathom-library/components"
 	],
 
+	"files": [
+		"$componentPath/$componentName.js",
+		"$componentPath/$componentName.html",
+		"$componentPath/_$componentName.scss",
+	],
+
 	"layout": {
 		"cols": [0.0, 0.5, 1.0],
 		"rows": [0.0, 0.5, 1.0],
