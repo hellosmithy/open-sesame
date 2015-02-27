@@ -18,7 +18,7 @@ class OpenSesameCommand(sublime_plugin.TextCommand):
 
 		if os.path.exists(project_dir + '/.open-sesame'):
 			project_settings_file = open(project_dir + '/.open-sesame')
-			print('found project settings file .open-sesame')
+			logging.debug('found project settings file .open-sesame')
 
 		if project_settings_file:
 			self.project_data = json.load(project_settings_file)
@@ -52,9 +52,6 @@ class OpenSesameCommand(sublime_plugin.TextCommand):
 		# Store the array of child components
 		self.components = components
 
-		# Store the array of file matching patterns
-		self.files = project_settings.get('files') if project_settings and project_settings.get('files') else plugin_settings.get('files')
-
 		# Get a list of component names to display in the panel menu
 		component_names = [ component['name'] for component in components ]
 
@@ -74,7 +71,11 @@ class OpenSesameCommand(sublime_plugin.TextCommand):
 		component_path = selected_component['path']
 
 		# Get the paths to the individual files within the component directory
-		paths = [ file.replace('$componentPath', component_path).replace('$componentName', component_name) for file in self.files ]
+		paths = [
+			component_path + '/' + component_name + '.js',
+			component_path + '/' + component_name + '.html',
+			component_path + '/_' + component_name + '.scss'
+		]
 
 		if self.project_data:
 			file_types = self.project_data.get('types')
