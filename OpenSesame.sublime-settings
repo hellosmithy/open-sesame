@@ -1,18 +1,41 @@
 {
-	"paths": [
-		"$ProjectDir/src/modules/components",
-		"$ProjectDir/src/modules/apps",
-		"$ProjectDir/src/modules/views",
-		"$ProjectDir/src/lib/fathom-library/components"
-	],
+	"paths": [],
 
-	"layout": {
-		"cols": [0.0, 0.5, 1.0],
-		"rows": [0.0, 0.5, 1.0],
-		"cells": [
-			[0, 0, 1, 2],
-			[1, 0, 2, 1],
-			[1, 1, 2, 2]
-		]
+	"projectType": "angular",
+
+	"projectTypes": {
+
+		"angular": {
+			"files": [
+				"*.js",
+				"*.html",
+				"_*.scss"
+			],
+			"layout": {
+				"cols": [0.0, 0.5, 1.0],
+				"rows": [0.0, 0.5, 1.0],
+				"cells": [
+					[0, 0, 1, 2],
+					[1, 0, 2, 1],
+					[1, 1, 2, 2]
+				]
+			}
+		},
+
+		"react": {
+			"files": [
+				"*.jsx",
+				"*.styl"
+			],
+			"layout": {
+				"cols": [0.0, 0.5, 1.0],
+				"rows": [0.0, 1.0],
+				"cells": [
+					[0, 0, 1, 1],
+					[1, 0, 2, 1]
+				]
+			}
+		}
+
 	}
 }

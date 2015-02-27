@@ -10,6 +10,7 @@ class OpenSesameCommand(sublime_plugin.TextCommand):
 
 		# Load the plugin settings
 		plugin_settings = sublime.load_settings('OpenSesame.sublime-settings')
+		self.plugin_settings = plugin_settings
 
 		# Override the plugin settings with project-specific settings if specified
 		project_settings = None
@@ -19,6 +20,8 @@ class OpenSesameCommand(sublime_plugin.TextCommand):
 		if os.path.exists(project_dir + '/.open-sesame'):
 			project_settings_file = open(project_dir + '/.open-sesame')
 			logging.debug('found project settings file .open-sesame')
+		else:
+			window.show_quick_panel([['OpenSesame Error', 'Missing configuration file in root (.open-sesame file)']], None)
 
 		if project_settings_file:
 			self.project_data = json.load(project_settings_file)
@@ -27,7 +30,6 @@ class OpenSesameCommand(sublime_plugin.TextCommand):
 		if self.project_data:
 			project_settings = self.project_data
 
-		self.layout = project_settings.get('layout') if project_settings and project_settings.get('layout') else plugin_settings.get('layout')
 		self.component_paths = project_settings.get('paths') if project_settings and project_settings.get('paths') else plugin_settings.get('paths')
 
 		# Replace placeholders in component paths
@@ -61,6 +63,9 @@ class OpenSesameCommand(sublime_plugin.TextCommand):
 
 	def open_component(self, index):
 
+		# Get a reference to the active window
+		window = sublime.active_window()
+
 		# Bail out if no component was selected
 		if index == -1:
 			return
@@ -70,30 +75,29 @@ class OpenSesameCommand(sublime_plugin.TextCommand):
 		component_name = selected_component['name']
 		component_path = selected_component['path']
 
+		# Get project type
+		project_type_key = self.project_data.get('projectType');
+		project_type = self.plugin_settings.get('projectTypes').get(project_type_key);
+
+		if project_type is None:
+			sublime.set_timeout(lambda: window.show_quick_panel([['OpenSesame Error', 'Cannot find project type: ' + project_type_key]], None), 10)
+			return
+
+		# Get project filetypes and layout
+		project_file_types = project_type.get('files')
+		project_layout = project_type.get('layout')
+
 		# Get the paths to the individual files within the component directory
-		paths = [
-			component_path + '/' + component_name + '.js',
-			component_path + '/' + component_name + '.html',
-			component_path + '/_' + component_name + '.scss'
-		]
-
-		if self.project_data:
-			file_types = self.project_data.get('types')
-
-			if file_types:
-				paths = []
-				for file_type in file_types:
-					paths.append(component_path + '/' + file_type.replace('*', component_name))
-				logging.debug(paths)
-
-		# Get a reference to the active window
-		window = sublime.active_window()
+		paths = []
+		for file_type in project_file_types:
+			paths.append(component_path + '/' + file_type.replace('*', component_name))
+		logging.debug(paths)
 
 		# Open the component source files and get the corresponding views
 		views = [ window.open_file(path) for path in paths ]
 
 		# Lay out the window panes
-		window.set_layout(self.layout)
+		window.set_layout(project_layout)
 
 		# Notify the focus listener that an open operation is in progress
 		FocusListener.opening = True

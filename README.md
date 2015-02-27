@@ -1,4 +1,4 @@
-#Open Sesame 0.2.0
+#Open Sesame 1.0.0
 
 A sublime plugin to open all files for a particular component in multiple views.
 
@@ -14,89 +14,136 @@ A sublime plugin to open all files for a particular component in multiple views.
 
 ### Usage
 
-Press `⌘+⌥+⇧+O` from anywhere within Sublime Text to open the panel.
+- Create an `.open-sesame` file at the root of your project (as explained [here](#project-config))
+- Press `⌘+⌥+⇧+o` from anywhere within Sublime Text to open the panel.
 
 
 ### Configuration
 
-#### User-level configuration
+#### Default configuration
 
-- Use the `paths` property to define the paths in which to search for components:
-
-	```
-	"paths": [
-		"$ProjectDir/src/modules/components",
-		"$ProjectDir/src/lib/fathom-library/components"
-	]
-	```
-
-	Paths specified in the `paths` property can use the `$ProjectDir` magic string to refer to the current project directory.
-
-- Use the `layout` property to define the window layout:
-
-	```
-	"layout": {
-		"cols": [0.0, 0.5, 1.0],
-		"rows": [0.0, 0.33333333333333, 1.0],
-		"cells": [
-			[0, 0, 1, 1],
-			[0, 1, 1, 2],
-			[1, 0, 2, 2]
-		]
-	}
-	```
-
-	Layouts must contain 3 cells (corresponding to HTML, CSS and JS respectively) and must be specified in the format expected by the [Window.set_layout()](http://www.sublimetext.com/forum/viewtopic.php?f=6&t=7284) method in the Sublime Text plugin API.
-
-Example `User/OpenSesame.sublime-settings` file:
+OpenSesame ships with the following default configuration:
 
 ```json
 {
-	"paths": [
-		"$ProjectDir/src/modules/components",
-		"$ProjectDir/src/lib/fathom-library/components"
-	],
-	"layout": {
-		"cols": [0.0, 0.5, 1.0],
-		"rows": [0.0, 0.4, 1.0],
-		"cells": [
-			[0, 0, 1, 1],
-			[0, 1, 1, 2],
-			[1, 0, 2, 2]
-		]
+	"paths": [],
+
+	"projectType": "angular",
+
+	"projectTypes": {
+
+		"angular": {
+			"files": [
+				"*.js",
+				"*.html",
+				"_*.scss"
+			],
+			"layout": {
+				"cols": [0.0, 0.5, 1.0],
+				"rows": [0.0, 0.5, 1.0],
+				"cells": [
+					[0, 0, 1, 2],
+					[1, 0, 2, 1],
+					[1, 1, 2, 2]
+				]
+			}
+		},
+
+		"react": {
+			"files": [
+				"*.jsx",
+				"*.styl"
+			],
+			"layout": {
+				"cols": [0.0, 0.5, 1.0],
+				"rows": [0.0, 1.0],
+				"cells": [
+					[0, 0, 1, 1],
+					[1, 0, 2, 1]
+				]
+			}
+		}
+
 	}
 }
 ```
 
-#### Project-level configuration 0.2.0
+Layouts must be specified in the format expected by the [Window.set_layout()](http://www.sublimetext.com/forum/viewtopic.php?f=6&t=7284) method in the Sublime Text plugin API. You must defined as many cells as files to open.
 
-Default and user-level settings can be overridden within a project by adding an `.open-sesame` file to root of your project folder
+We ship 2 default project types:
+
+- angular
+- react
+
+**Note**: The `paths` are not defined yet as it should be defined per project (as we'll see [further down](#project-config)).
+
+**Note**: In the `files` section, `*` is replaced by folder name so if your modules require a prefix for a given type
+specify it in the following format - `_*.scss` which becomes `_component.scss` or `index.html` (*remains untouched*) if all modules have a naming scheme.
+
+
+#### User-level configuration
+
+Following the conventions of any sublime settings file, you can override any settings by creating your own `User/OpenSesame.sublime-settings` file. For example if you wanted to redefine the layouts for the 2 default project types:
+
+```json
+{
+	"projectTypes": {
+
+		"angular": {
+			"files": [
+				"*.js",
+				"*.html",
+				"_*.scss"
+			],
+			"layout": {
+				"cols": [0.0, 0.55, 1.0],
+				"rows": [0.0, 0.5, 1.0],
+				"cells": [
+					[0, 0, 2, 1],
+					[0, 1, 1, 2],
+					[1, 1, 2, 2]
+				]
+			}
+		},
+
+		"react": {
+			"files": [
+				"*.jsx",
+				"*.styl"
+			],
+			"layout": {
+				"cols": [0.0, 1.0],
+				"rows": [0.0, 0.5, 1.0],
+				"cells": [
+					[0, 0, 1, 1],
+					[0, 1, 1, 2]
+				]
+			}
+		}
+
+	}
+}
+```
+
+
+#### <a name="project-config"></a>Project-level configuration
+
+- Add an `.open-sesame` file to root of your project folder.
+- Define the `paths` where to find the components to list.
+- Define the `projectType` to let OpenSesame know what file types to open and which layout to use.
 
 Example `.open-sesame` file:
 
-```
-	{
-		"paths": [
-			"$ProjectDir/src/app/components",
-			"$ProjectDir/src/lib/fathom-components/components"
-		],
-		"layout": {
-			"cols": [0.0, 0.5, 1.0],
-			"rows": [0.0, 0.4, 1.0],
-			"cells": [
-				[0, 0, 1, 1],
-				[0, 1, 1, 2],
-				[1, 0, 2, 2]
-			]
-		},
-		"types": [
-			"*.html",
-			"*.js",
-			"*.styl"
-		]
-	}
+```json
+{
+	"paths": [
+		"$ProjectDir/src/apps",
+		"$ProjectDir/src/views",
+		"$ProjectDir/src/components"
+	],
+
+	"projectType": "react"
+}
 ```
 
-Note * is replaced by folder name so if your modules require a prefix for a given type
-specify it in the following format - `_*.scss` which becomes `_component.scss` or `index.html` (*remains untouched*) if all modules have a naming scheme. 
-
+**Note**: Paths specified in the `paths` property can use the `$ProjectDir` magic string to refer to the current project directory.
