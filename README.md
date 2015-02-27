@@ -68,16 +68,11 @@ OpenSesame ships with the following default configuration:
 }
 ```
 
-Layouts must be specified in the format expected by the [Window.set_layout()](http://www.sublimetext.com/forum/viewtopic.php?f=6&t=7284) method in the Sublime Text plugin API. You must defined as many cells as files to open.
+**Notes:**
 
-We ship 2 default project types:
-
-- angular
-- react
-
-**Note**: The `paths` are not defined yet as it should be defined per project (as we'll see [further down](#project-config)).
-
-**Note**: In the `files` section, `*` is replaced by folder name so if your modules require a prefix for a given type
+- Layouts must be specified in the format expected by the [Window.set_layout()](http://www.sublimetext.com/forum/viewtopic.php?f=6&t=7284) method in the Sublime Text plugin API. You must defined as many cells as files to open.
+- The `paths` are not defined yet as it should be defined per project (as we'll see [further down](#project-config)).
+- In the `files` section, `*` is replaced by folder name so if your modules require a prefix for a given type
 specify it in the following format - `_*.scss` which becomes `_component.scss` or `index.html` (*remains untouched*) if all modules have a naming scheme.
 
 
