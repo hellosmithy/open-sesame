@@ -77,7 +77,14 @@ class OpenSesameCommand(sublime_plugin.TextCommand):
 
 		# Get project type
 		project_type_key = self.project_data.get('projectType');
-		project_type = self.plugin_settings.get('projectTypes').get(project_type_key);
+
+		project_type = None
+
+		if self.project_data.get('projectTypes'):
+			project_type = self.project_data.get('projectTypes').get(project_type_key)
+
+		if project_type is None:
+			project_type = self.plugin_settings.get('projectTypes').get(project_type_key);
 
 		if project_type is None:
 			sublime.set_timeout(lambda: window.show_quick_panel([['OpenSesame Error', 'Cannot find project type: ' + project_type_key]], None), 10)
